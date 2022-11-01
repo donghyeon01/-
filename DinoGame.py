@@ -40,6 +40,7 @@ def main():
     font=pygame.font.SysFont("arial",30,True,True)
     #(font name, size, bold, italic)
     red=(255,0,0)
+    green=(0,255,0)
     black=(0,0,0)
     score=0
     
@@ -51,6 +52,7 @@ def main():
         
         text_score=font.render("SCORE :"+f'{score}',True,black)
         screen.blit(text_score,(20,10))
+        #점수 텍스트 출력
         
         # event check        
         for event in pygame.event.get():
@@ -87,23 +89,33 @@ def main():
             screen.blit(imgDino2,(dino_x,dino_y))
             leg_swap=True
             
+        #나무 사각형 
         rect_tree=imgTree.get_rect()
         rect_tree.left=tree_x
         rect_tree.top=tree_y
         
+        #공룡 사각형
         rect_dino=imgDino1.get_rect()
         rect_dino.x=dino_x
         rect_dino.y=dino_y
         
+        #공룡과 나무 충돌시 게임 종료
         if  rect_tree.colliderect(rect_dino):
             Over=False
             
             
             text_over=font.render("GAME OVER",True,red)
             #render(Text,antialias,color,background=None)
-            screen.blit(text_over,(300,200))
+            screen.blit(text_over,(300,100))
+            #게임 오버 텍스트 출력
+            text_restart=font.render("RESTART",True,green)
+            text_exit=font.render("GAME EXIT",True,black)
+            screen.blit(text_restart,(300,130))
+            screen.blit(text_exit,(300,160))
+            
         else:
             score+=10
+            #점수 증가
         
             
             
