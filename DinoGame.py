@@ -1,5 +1,6 @@
 #공룡 게임
 import pygame
+from pygame.locals import* #pygame.locals 하위 모듈을 import
 import sys
 # step1 : set screen, fps
 # step2 : show dino, jump dino
@@ -8,7 +9,21 @@ import sys
 pygame.init() #파이게임 모듈 초기화
 pygame.display.set_caption('Dino Game')#게임 프로그램 이름 설정
 MAX_WIDTH=800 #스크린 가로크기
-MAX_HEIGHT=400 #세로 크
+MAX_HEIGHT=400 #세로 크기
+
+class Button:
+    def __init__(self,img_in,x,y,width,height,action=None):
+        mouse=pygame.mouse.get_pos()#마우스 좌표 저장
+        click=pygame.mouse.get_pressed()#클릭 시
+        if x+width>mouse[0]>x and y+height>mouse[1]>y:
+            if click[0] and action != None:
+                action()
+                
+def quitgame():
+    main.quit()
+    pygame.quit()
+    sys.exit()
+    
 def main():
     # set screen, fps    
     screen=pygame.display.set_mode((MAX_WIDTH,MAX_HEIGHT))
@@ -45,6 +60,9 @@ def main():
     score=0
     
     
+
+    
+                    
     Over=True
     
     while Over:
@@ -108,14 +126,32 @@ def main():
             #render(Text,antialias,color,background=None)
             screen.blit(text_over,(300,100))
             #게임 오버 텍스트 출력
-            text_restart=font.render("RESTART",True,green)
-            text_exit=font.render("GAME EXIT",True,black)
+            text_restart=font.render("RESTART TO PRESS 'R'",True,green)
+            text_exit=font.render("GAME EXIT TO PRESS 'E'",True,black)
             screen.blit(text_restart,(300,130))
-            screen.blit(text_exit,(300,160))
+            screen.blit
+            #render(Text,antialias,color,background=None)
+            screen.blit(text_over,(300,100))(text_exit,(300,160))
+            #리스타트 사각형
+            #rect_restart=text_restart.get_rect()
+            #rect_exit=text_exit.get_rect()
+            #exit_width=text_exit.get_width()
+            #exit_height=text_exit.get_height()
+            
+            #restartButton
+            #exitButton=Button(rect_exit,300,160,exit_width,exit_height,quitgame)
+            for event in pygame.event.get():
+                if event.type==QUIT:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key==pygame.K_r:
+                    continue
             
         else:
             score+=10
             #점수 증가
+        
         
             
             
