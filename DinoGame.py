@@ -1,41 +1,55 @@
 #공룡 게임
 import pygame
-from pygame.locals import* #pygame.locals 하위 모듈을 import
 import sys
 # step1 : set screen, fps
 # step2 : show dino, jump dino
 # step3 : show tree, move tree 
 
-pygame.init() #파이게임 모듈 초기화
-pygame.display.set_caption('Dino Game')#게임 프로그램 이름 설정
 MAX_WIDTH=800 #스크린 가로크기
 MAX_HEIGHT=400 #세로 크기
+red=(255,0,0)
+green=(0,255,0)
+black=(0,0,0)
+white=(255,255,255)
 
-class Button:
-    def __init__(self,img_in,x,y,width,height,action=None):
-        mouse=pygame.mouse.get_pos()#마우스 좌표 저장
-        click=pygame.mouse.get_pressed()#클릭 시
-        if x+width>mouse[0]>x and y+height>mouse[1]>y:
-            if click[0] and action != None:
-                action()
-                
-def quitgame():
-    main.quit()
-    pygame.quit()
-    sys.exit()
-    
-def main():
+def startGame():
+    global screen,clock,imgDino1,imgDino2,imgTree,fps
+    pygame.init() #파이게임 모듈 초기화
+    pygame.display.set_caption('Dino Game')#게임 프로그램 이름 설정
     # set screen, fps    
     screen=pygame.display.set_mode((MAX_WIDTH,MAX_HEIGHT))
     #게임이 실행될 창 생성(가로*세로)
     fps=pygame.time.Clock()
     #프레임 조정하기 위한 변수 생성
     #화면을 초당 몇 번 출력하는가
-
     # dino    
     imgDino1=pygame.image.load('dino1.png')
     imgDino2=pygame.image.load('dino2.png')
     #공룡 사진 불러오기
+    imgTree=pygame.image.load('tree.png')
+    #나무사진 불러오기
+    
+def restartGame():
+    pygame.display.update()
+    runGame()
+    
+def drawOver():
+    global screen
+    font=pygame.font.SysFont("arial",30,True,True)
+    #screen.fill((0,0,0))
+    text_over=font.render("GAME OVER",True,red)
+    #render(Text,antialias,color,background=None)
+    screen.blit(text_over,(300,100))
+    #게임 오버 텍스트 출력
+    text_restart=font.render("PRESS 'R' TO RESTART",True,green)
+    text_exit=font.render("PRESS 'E' TO GAME EXIT",True,black)
+    screen.blit(text_restart,(300,130))
+    screen.blit(text_exit,(300,160))
+    
+    pygame.display.update()
+    
+def runGame():
+    
     
     dino_height=imgDino1.get_size()[1]#공룡 세로 길이
     dino_bottom=MAX_HEIGHT-dino_height#공룡 이미지 y축 중심 설정
@@ -46,41 +60,27 @@ def main():
     leg_swap=True
     is_bottom=True
     is_go_up=False
-    # tree    
-    imgTree=pygame.image.load('tree.png')
+   
     tree_height=imgTree.get_size()[1]
     tree_x=MAX_WIDTH
     tree_y=MAX_HEIGHT-tree_height
     
-    font=pygame.font.SysFont("arial",30,True,True)
-    #(font name, size, bold, italic)
-    red=(255,0,0)
-    green=(0,255,0)
-    black=(0,0,0)
+    
     score=0
     
+    Running=True
     
+    while Running:
+        font=pygame.font.SysFont("arial",30,True,True)
+        #(font name, size, bold, italic)
 
-    
-                    
-    Over=True
-    
-    while Over:
         screen.fill((255,255,255))
         
         text_score=font.render("SCORE :"+f'{score}',True,black)
         screen.blit(text_score,(20,10))
         #점수 텍스트 출력
-        
-        # event check        
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type==pygame.KEYDOWN:
-                if is_bottom:
-                    is_go_up=True
-                    is_bottom=False
+
+                        
         # dino move        
         if is_go_up:
             dino_y -= 10.0
@@ -119,39 +119,38 @@ def main():
         
         #공룡과 나무 충돌시 게임 종료
         if  rect_tree.colliderect(rect_dino):
-            Over=False
             
-            
-            text_over=font.render("GAME OVER",True,red)
-            #render(Text,antialias,color,background=None)
-            screen.blit(text_over,(300,100))
-            #게임 오버 텍스트 출력
-            text_restart=font.render("RESTART TO PRESS 'R'",True,green)
-            text_exit=font.render("GAME EXIT TO PRESS 'E'",True,black)
-            screen.blit(text_restart,(300,130))
-            screen.blit
-            #render(Text,antialias,color,background=None)
-            screen.blit(text_over,(300,100))(text_exit,(300,160))
-            #리스타트 사각형
-            #rect_restart=text_restart.get_rect()
-            #rect_exit=text_exit.get_rect()
-            #exit_width=text_exit.get_width()
-            #exit_height=text_exit.get_height()
-            
-            #restartButton
-            #exitButton=Button(rect_exit,300,160,exit_width,exit_height,quitgame)
-            for event in pygame.event.get():
-                if event.type==QUIT:
-                    pygame.quit()
-                    sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key==pygame.K_r:
-                    continue
-            
+            drawOver()
+            pressKey=True
+            while pressKey:
+                for event in pygame.event.get():
+                    if event.type==pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type==pygame.KEYDOWN:
+                        if event.key==pygame.K_r:
+                            restartGame()
+                        if event.key==pygame.K_e:
+                            pygame.quit()
+                            sys.exit()
+               
         else:
             score+=10
             #점수 증가
         
+        #이벤트 점프랑, 게임종료
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_SPACE:
+                    if is_bottom:
+                        is_go_up=True
+                        is_bottom=False
+                    #스페이스바 눌러서 공룡 점프
+            else:
+                pass
         
             
             
@@ -159,5 +158,8 @@ def main():
         pygame.display.update()
         fps.tick(30)
         
-if __name__ == '__main__':
-    main()
+
+
+
+startGame()
+runGame()
